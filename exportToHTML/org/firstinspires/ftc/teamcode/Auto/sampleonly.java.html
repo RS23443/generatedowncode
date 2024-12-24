@@ -1,0 +1,1040 @@
+<html>
+<head>
+<title>sampleonly.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+sampleonly.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">Auto</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">androidx</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">NonNull</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">dashboard</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">Config</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">dashboard</span><span class="s2">.</span><span class="s1">telemetry</span><span class="s2">.</span><span class="s1">TelemetryPacket</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">Action</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">ParallelAction</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">Pose2d</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">SequentialAction</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">TrajectoryActionBuilder</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">roadrunner</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">Actions</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">eventloop</span><span class="s2">.</span><span class="s1">opmode</span><span class="s2">.</span><span class="s1">Autonomous</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">eventloop</span><span class="s2">.</span><span class="s1">opmode</span><span class="s2">.</span><span class="s1">LinearOpMode</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">ColorSensor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">DcMotor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">HardwareMap</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">ModulesToImport</span><span class="s2">.</span><span class="s1">ftclibsubsytems</span><span class="s2">.</span><span class="s1">Robot_Controller</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">ModulesToImport</span><span class="s2">.</span><span class="s1">ftclibsubsytems</span><span class="s2">.</span><span class="s1">deposit_subsystem</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">ModulesToImport</span><span class="s2">.</span><span class="s1">ftclibsubsytems</span><span class="s2">.</span><span class="s1">intake_subsystem</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">ModulesToImport</span><span class="s2">.</span><span class="s1">ftclibsubsytems</span><span class="s2">.</span><span class="s1">lifts_subsystem</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">MecanumDrive</span><span class="s2">;</span>
+<span class="s3">//Use this field layout for X and Y</span>
+<span class="s3">// -X     BlueR                   BlueL     +X</span>
+<span class="s3">//|-------------------------------------------|  +Y</span>
+<span class="s3">//|                                           |</span>
+<span class="s3">//|       3     1                3     1      | 1</span>
+<span class="s3">//|          2                      2         | 2 Backdrop</span>
+<span class="s3">//|                                           | 3</span>
+<span class="s3">//|                                           |</span>
+<span class="s3">//|                   0,0                     |</span>
+<span class="s3">//|                                           |</span>
+<span class="s3">//|                                           |</span>
+<span class="s3">//|                                           | 1</span>
+<span class="s3">//|          2                      2         | 2 Backdrop</span>
+<span class="s3">//|       1     3                1     3      | 3</span>
+<span class="s3">//|                                           |</span>
+<span class="s3">//|-------------------------------------------|  -Y</span>
+<span class="s3">//         RedL                   RedR</span>
+<span class="s3">//</span>
+<span class="s3">//Use this compass for angles to match field above</span>
+<span class="s3">//              90</span>
+<span class="s3">//    180                0</span>
+<span class="s3">//              270</span>
+<span class="s3">//</span>
+
+
+<span class="s1">@Config</span>
+<span class="s1">@Autonomous</span><span class="s2">(</span><span class="s1">name</span><span class="s2">=</span><span class="s4">&quot;4 sample&quot;</span><span class="s2">, </span><span class="s1">group </span><span class="s2">=</span><span class="s4">&quot;Autonomous&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">sampleonly </span><span class="s0">extends </span><span class="s1">LinearOpMode </span><span class="s2">{</span>
+
+
+    <span class="s0">public class </span><span class="s1">Lifts </span><span class="s2">{</span>
+        <span class="s0">private </span><span class="s1">DcMotor rightslide</span><span class="s2">;</span>
+        <span class="s0">private </span><span class="s1">DcMotor leftslide</span><span class="s2">;</span>
+        <span class="s0">private </span><span class="s1">lifts_subsystem liftss</span><span class="s2">;</span>
+
+        <span class="s0">public </span><span class="s1">Lifts</span><span class="s2">(</span><span class="s1">HardwareMap hardwareMap</span><span class="s2">) {</span>
+             <span class="s0">this</span><span class="s2">.</span><span class="s1">liftss </span><span class="s2">= </span><span class="s0">new </span><span class="s1">lifts_subsystem</span><span class="s2">(</span><span class="s1">hardwareMap</span><span class="s2">,</span><span class="s4">&quot;leftslide&quot;</span><span class="s2">,</span><span class="s4">&quot;rightslide&quot;</span><span class="s2">);</span>
+
+            <span class="s3">/*rightslide = hardwareMap.get(DcMotor.class, &quot;rightslide&quot;); 
+            leftslide = hardwareMap.get(DcMotor.class, &quot;leftslide&quot;); 
+ 
+            leftslide.setDirection((DcMotor.Direction.REVERSE)); 
+ 
+            leftslide.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER)); 
+            rightslide.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER)); 
+            leftslide.setTargetPosition(0); 
+            rightslide.setTargetPosition(0); 
+ 
+            leftslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+            rightslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER); 
+ 
+            rightslide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); 
+            leftslide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/</span>
+
+        <span class="s2">}</span>
+        <span class="s0">public class </span><span class="s1">MoveLiftToPosition </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+
+            <span class="s0">private final </span><span class="s1">lifts_subsystem liftSubsystem</span><span class="s2">;</span>
+            <span class="s0">private final int </span><span class="s1">targetPosition</span><span class="s2">;</span>
+
+
+            <span class="s0">public </span><span class="s1">MoveLiftToPosition</span><span class="s2">(</span><span class="s1">lifts_subsystem liftSubsystem</span><span class="s2">, </span><span class="s0">int </span><span class="s1">targetPosition</span><span class="s2">) {</span>
+                <span class="s0">this</span><span class="s2">.</span><span class="s1">liftSubsystem </span><span class="s2">= </span><span class="s1">liftSubsystem</span><span class="s2">;</span>
+                <span class="s0">this</span><span class="s2">.</span><span class="s1">targetPosition </span><span class="s2">= </span><span class="s1">targetPosition</span><span class="s2">; </span><span class="s3">// Passed as a parameter</span>
+            <span class="s2">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+
+
+                <span class="s1">liftSubsystem</span><span class="s2">.</span><span class="s1">slidePID</span><span class="s2">(</span><span class="s1">targetPosition</span><span class="s2">);</span>
+
+                <span class="s0">int </span><span class="s1">currentLeft </span><span class="s2">= </span><span class="s1">liftSubsystem</span><span class="s2">.</span><span class="s1">getLeftSlidePosition</span><span class="s2">();</span>
+                <span class="s0">int </span><span class="s1">currentRight </span><span class="s2">= </span><span class="s1">liftSubsystem</span><span class="s2">.</span><span class="s1">getRightSlidePosition</span><span class="s2">();</span>
+
+                <span class="s1">packet</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s4">&quot;Left Slide Position&quot;</span><span class="s2">, </span><span class="s1">currentLeft</span><span class="s2">);</span>
+                <span class="s1">packet</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s4">&quot;Right Slide Position&quot;</span><span class="s2">, </span><span class="s1">currentRight</span><span class="s2">);</span>
+                <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;right&quot;</span><span class="s2">,</span><span class="s1">currentRight</span><span class="s2">);</span>
+                <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;left&quot;</span><span class="s2">,</span><span class="s1">currentLeft</span><span class="s2">);</span>
+
+                <span class="s0">boolean </span><span class="s1">isAtTarget </span><span class="s2">=  (</span><span class="s1">currentLeft </span><span class="s2">&gt; </span><span class="s1">targetPosition </span><span class="s2">|| </span><span class="s1">currentRight </span><span class="s2">&gt; </span><span class="s1">targetPosition</span><span class="s2">) &amp;&amp;(</span>
+                        <span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">currentLeft </span><span class="s2">- </span><span class="s1">targetPosition</span><span class="s2">) &lt; </span><span class="s5">75 </span><span class="s2">||</span>
+                        <span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">currentRight </span><span class="s2">- </span><span class="s1">targetPosition</span><span class="s2">) &lt; </span><span class="s5">75</span><span class="s2">);</span>
+
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">isAtTarget</span><span class="s2">) {</span>
+                    <span class="s1">liftSubsystem</span><span class="s2">.</span><span class="s1">stopSlides</span><span class="s2">();</span>
+                    <span class="s0">return false</span><span class="s2">; </span><span class="s3">// Action is complete</span>
+                <span class="s2">}</span>
+
+                <span class="s0">return true</span><span class="s2">; </span><span class="s3">// Action should continue</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action moveLiftAction</span><span class="s2">(</span><span class="s0">int </span><span class="s1">targetPosition</span><span class="s2">) {</span>
+            <span class="s0">return new </span><span class="s1">MoveLiftToPosition</span><span class="s2">(</span><span class="s1">liftss</span><span class="s2">, </span><span class="s1">targetPosition</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+
+        <span class="s3">/*public class Initifts implements Action { 
+ 
+            // checks if the lift motor has been powered on 
+            private boolean initialized = false; 
+ 
+            // actions are formatted via telemetry packets as below 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                // powers on motor, if it is not on 
+                if (!initialized) { 
+                    rightslide.setPower(1.0); 
+                    leftslide.setPower(1.0); 
+                    initialized = true; 
+                } 
+ 
+                // checks lift's current position 
+                double pos = rightslide.getCurrentPosition(); 
+                double pos1 = leftslide.getCurrentPosition(); 
+                packet.put(&quot;rightSlidePos&quot;, pos); 
+                packet.put(&quot;leftSlidePos&quot;, pos1); 
+                telemetry.addData(&quot;rightslidepose&quot;,pos1); 
+                telemetry.addData(&quot;leftslide&quot;,pos); 
+                if (pos &lt; 500.00 || pos1 &lt; 500.0) { 
+                    // true causes the action to rerun 
+                    return true; 
+                } else { 
+                    // false stops action rerun 
+                    rightslide.setPower(0); 
+                    leftslide.setPower(0); 
+                    return false; 
+                } 
+                // overall, the action powers the lift until it surpasses 
+                // 2000 encoder ticks, then powers it off 
+            } 
+        } 
+        public Action initlift(){ 
+            return new Initifts(); 
+        } 
+ 
+        public class sampleparallelLiftUp implements Action { 
+            private boolean initialized = false; 
+ 
+            // actions are formatted via telemetry packets as below 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                // powers on motor, if it is not on 
+                if (!initialized) { 
+                    rightslide.setPower(0.8); 
+                    leftslide.setPower(0.8); 
+                    initialized = true; 
+                } 
+ 
+                // checks lift's current position 
+                double pos = rightslide.getCurrentPosition(); 
+                double pos1 = leftslide.getCurrentPosition(); 
+                packet.put(&quot;rightSlidePos&quot;, pos); 
+                packet.put(&quot;leftSlidePos&quot;, pos1); 
+                if (pos &lt; 2000.0 &amp;&amp; pos1 &lt; 2000.0) { 
+                    // true causes the action to rerun 
+                    return true; 
+                } else { 
+                    // false stops action rerun 
+                    rightslide.setPower(0); 
+                    leftslide.setPower(0); 
+                    return false; 
+                } 
+                // overall, the action powers the lift until it surpasses 
+                // 3000 encoder ticks, then powers it off 
+ 
+            } 
+ 
+        } 
+        public Action sampleparallelLiftUp(){ 
+            return new sampleparallelLiftUp(); 
+        } 
+ 
+        public class samplefullLiftUp implements Action { 
+            private boolean initialized = false; 
+ 
+            // actions are formatted via telemetry packets as below 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                // powers on motor, if it is not on 
+                if (!initialized) { 
+                    rightslide.setPower(0.8); 
+                    leftslide.setPower(0.8); 
+                    initialized = true; 
+                } 
+ 
+                // checks lift's current position 
+                double pos = rightslide.getCurrentPosition(); 
+                double pos1 = leftslide.getCurrentPosition(); 
+                packet.put(&quot;rightSlidePos&quot;, pos); 
+                packet.put(&quot;leftSlidePos&quot;, pos1); 
+                if (pos &lt; 3800 &amp;&amp; pos1 &lt; 3800) { 
+                    // true causes the action to rerun 
+                    return true; 
+                } else { 
+                    // false stops action rerun 
+                    rightslide.setPower(0); 
+                    leftslide.setPower(0); 
+                    return false; 
+                } 
+                // overall, the action powers the lift until it surpasses 
+                // 3000 encoder ticks, then powers it off 
+ 
+            } 
+ 
+        } 
+        public Action samplefullLiftUp(){ 
+            return new samplefullLiftUp(); 
+        } 
+ 
+        public class slidesDown implements Action { 
+            private boolean initialized = false; 
+ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                if (!initialized) { 
+                    rightslide.setPower(-1.0); 
+                    leftslide.setPower(-1.0); 
+                    initialized = true; 
+                } 
+ 
+                double pos = rightslide.getCurrentPosition(); 
+                double pos1 = leftslide.getCurrentPosition(); 
+                packet.put(&quot;rightSlidePos&quot;, pos); 
+                packet.put(&quot;leftSlidePos&quot;, pos1); 
+                if (pos &gt; 400.0 &amp;&amp; pos1 &gt; 400.0) { 
+                    return true; 
+                } else { 
+                    rightslide.setPower(0); 
+                    leftslide.setPower(0); 
+                    return false; 
+                } 
+            } 
+        } 
+        public Action slidesDown(){ 
+            return new Lifts.slidesDown(); 
+        }*/</span>
+
+    <span class="s2">}</span>
+
+    <span class="s3">/*public class Claw{ 
+        private deposit_subsystem depo; 
+        private intake_subsystem intake_sub; 
+        private Servo finger; 
+        private Servo outext; 
+        private Servo spin; 
+        private Servo lof; 
+        private Servo rof; 
+ 
+        public Claw(HardwareMap hardwareMap) { 
+            intake_sub = new intake_subsystem(hardwareMap,&quot;left_intake_flip&quot;,&quot;right_intake_flip&quot;,&quot;left_extension&quot;,&quot;right_extension&quot;,&quot;clawtakespin&quot;,&quot;clawtake&quot;); 
+            depo = new deposit_subsystem(intake_sub, hardwareMap,&quot;left_outtake_flip&quot;, &quot;right_outtake_flip&quot;,&quot;outtake_ext&quot;,&quot;spin&quot;,&quot;finger&quot;); 
+            /*finger = hardwareMap.get(Servo.class, &quot;finger&quot;); 
+            outext = hardwareMap.get(Servo.class, &quot;outtake_ext&quot;); 
+            spin = hardwareMap.get(Servo.class, &quot;spin&quot;); 
+            lof = hardwareMap.get(Servo.class, &quot;left_outtake_flip&quot;); 
+            rof = hardwareMap.get(Servo.class, &quot;right_outtake_flip&quot;);*/</span>
+
+        <span class="s3">/*} 
+ 
+        public class ClawReset implements Action { 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                finger.setPosition(0.0); 
+                sleep(100); 
+                rof.setPosition(0.73); 
+                lof.setPosition(0.27); 
+                outext.setPosition(0.5); 
+                sleep(100); 
+                spin.setPosition(0.00); 
+                return false; 
+            } 
+        } 
+        public Action ClawReset () { 
+            return new Claw.ClawReset(); 
+        } 
+        public class fingerClose implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                finger.setPosition(0.67); 
+                return false; 
+            } 
+ 
+        } 
+        public Action fingerclose(){ 
+            return new Claw.fingerClose(); 
+        } 
+ 
+        public class FlipClawHalf implements Action { 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet) { 
+                // will have to bring the claw down because it starts elevated (d_pad down) 
+                // will cause the arm to flip out 
+                //finger.setPosition(0.67); // close the finger 
+                sleep(400); 
+                rof.setPosition(0.35); 
+                lof.setPosition(0.65); 
+                spin.setPosition(0.0); 
+                sleep(100); 
+                outext.setPosition(0.0); 
+                return false; 
+            } 
+        } 
+        public Action flipclawhalf() { 
+            return new Claw.FlipClawHalf(); 
+        } 
+ 
+        public class dumpOff implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                finger.setPosition(0.65); // close the finger 
+                rof.setPosition(0.25); 
+                lof.setPosition(0.75); 
+                spin.setPosition(0.0); 
+                sleep(100); 
+                outext.setPosition(0.0); 
+                return false; 
+            } 
+        } 
+ 
+        public Action dumpoff(){ 
+            return new Claw.dumpOff(); 
+        } 
+ 
+        public class OpenClaw implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                finger.setPosition(0.0); 
+                return false; 
+            } 
+ 
+        } 
+        public Action OpenClaw(){ 
+            return new OpenClaw(); 
+        } 
+ 
+        public class InitClaw implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                finger.setPosition(0.65); 
+                sleep(100); 
+                rof.setPosition(0.73); 
+                lof.setPosition(0.27); 
+                outext.setPosition(0.5); 
+                sleep(100); 
+                spin.setPosition(0.00); 
+ 
+                return false; 
+            } 
+ 
+        } 
+        public Action initClaw(){ 
+            return new InitClaw(); 
+        } 
+    } 
+ 
+ 
+ 
+    /*public class intake{ 
+        private intake_subsystem intake_sub; 
+        //private Servo intake; 
+        //private Servo intakespin; 
+        //private Servo lif; 
+        //private Servo lext; 
+        //private Servo rif; 
+        //private Servo rext; 
+        //private ColorSensor colorSensor; 
+ 
+ 
+        public intake(HardwareMap hardwareMap){ 
+            /*intake = hardwareMap.get(Servo.class, &quot;clawtake&quot;); 
+            intakespin = hardwareMap.get(Servo.class,&quot;clawtakespin&quot;); 
+            lif = hardwareMap.get(Servo.class, &quot;left_intake_flip&quot;); 
+            lext = hardwareMap.get(Servo.class, &quot;left_extension&quot;); 
+            rif = hardwareMap.get(Servo.class, &quot;right_intake_flip&quot;); 
+            rext = hardwareMap.get(Servo.class, &quot;right_extension&quot;);*/</span>
+
+            <span class="s3">//intake_sub = new intake_subsystem(hardwareMap,&quot;left_intake_flip&quot;,&quot;right_intake_flip&quot;,&quot;left_extension&quot;,&quot;right_extension&quot;,&quot;clawtakespin&quot;,&quot;clawtake&quot;);</span>
+
+        <span class="s3">//}</span>
+        <span class="s3">//public class extendoMax implements Action{</span>
+          <span class="s3">//  @Override</span>
+            <span class="s3">//public boolean run(@NonNull TelemetryPacket packet) {</span>
+                <span class="s3">//intake.setPosition(0.1);</span>
+                <span class="s3">//intakespin.setPosition(0.3);</span>
+                <span class="s3">//rext.setPosition(0.8);</span>
+                <span class="s3">//lext.setPosition(0.10);</span>
+                <span class="s3">//sleep(300);</span>
+                <span class="s3">//lif.setPosition(0.1);</span>
+                <span class="s3">//rif.setPosition(0.9);</span>
+              <span class="s3">//  try {</span>
+                <span class="s3">//    intake_sub.maxextension();</span>
+               <span class="s3">// } catch (InterruptedException e) {</span>
+                 <span class="s3">//   throw new RuntimeException(e);</span>
+               <span class="s3">// }</span>
+                <span class="s3">//return false;</span>
+            <span class="s3">//}</span>
+
+        <span class="s3">//}</span>
+        <span class="s3">//public Action extendoMax(){</span>
+          <span class="s3">//  return new intake.extendoMax();</span>
+        <span class="s3">//}</span>
+
+<span class="s3">//        public class extendoMaxfor3rd implements Action{</span>
+<span class="s3">//            @Override</span>
+  <span class="s3">/*          public boolean run(@NonNull TelemetryPacket packet) { 
+                /*intake.setPosition(0.6); 
+                intakespin.setPosition(0.3); 
+                sleep(100); 
+                lif.setPosition(0.3); 
+                rif.setPosition(0.7); 
+                sleep(100); 
+                rext.setPosition(0.8); 
+                lext.setPosition(0.10); 
+                sleep(300); 
+                lif.setPosition(0.1); 
+                rif.setPosition(0.9);*/</span>
+               <span class="s3">/* try { 
+                    intake_sub.max_ext_for_3rd(); 
+                } catch (InterruptedException e) { 
+                    throw new RuntimeException(e); 
+                } 
+                return false; 
+            } 
+ 
+        } 
+        public Action extendoMaxfor3rd(){ 
+            return new intake.extendoMaxfor3rd();} 
+ 
+        public class transferpose implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                /*intake.setPosition(0.1); 
+                intakespin.setPosition(0.0); 
+                sleep(200); 
+                lif.setPosition(1.0); 
+                rif.setPosition(0.0); 
+                sleep(200); 
+                rext.setPosition(0.5); 
+                lext.setPosition(0.4);*/</span>
+ <span class="s3">/*               try { 
+                    intake_sub.transferpose(); 
+                } catch (InterruptedException e){ 
+                    throw new RuntimeException(e); 
+                } 
+                return false; 
+            } 
+        } 
+        public Action transferpose(){ 
+            return new intake.transferpose(); 
+        } 
+ 
+ 
+        /*public class extendominfor3rd implements Action{ 
+            @Override 
+            public boolean run(@NonNull TelemetryPacket packet){ 
+                //intake.setPosition(0.1); 
+                intake.setPosition(0.6); 
+                intakespin.setPosition(0.0); 
+                sleep(200); 
+                lif.setPosition(1.0); 
+                rif.setPosition(0.0); 
+                intake.setPosition(0.1); 
+                sleep(200); 
+                rext.setPosition(0.5); 
+                lext.setPosition(0.4); 
+ 
+                return false; 
+            } 
+        } 
+        public Action extendominfor3rd(){ 
+            return new intake.extendominfor3rd(); 
+        }*/</span>
+
+        <span class="s3">/*public class extendomid implements Action{ 
+            @Override 
+            public  boolean run(@NonNull TelemetryPacket packet){ 
+                intakespin.setPosition(0.3); 
+                rext.setPosition(0.71); 
+                lext.setPosition(0.19); 
+                sleep(300); 
+                lif.setPosition(0.1); 
+                rif.setPosition(0.9); 
+                //sleep(1000); 
+                return false; 
+            } 
+        } 
+        public Action extendomid(){ 
+            return new intake.extendomid(); 
+        }*/</span>
+
+       <span class="s3">/* public class intakeclose implements Action{ 
+            @Override 
+            public  boolean run(@NonNull TelemetryPacket packet){ 
+                intake_sub.intakeclose(); 
+                return false; 
+            } 
+        } 
+        public Action intakeclose(){ 
+            return new intakeclose(); 
+        } 
+ 
+        public class intakeopen implements Action{ 
+            @Override 
+            public  boolean run(@NonNull TelemetryPacket packet){ 
+                intake_sub.intakeopen(); 
+                return false; 
+            } 
+ 
+        } 
+ 
+        public Action intakeopen() { 
+            return new intake.intakeopen(); 
+        } 
+ 
+        public class intakespin implements Action{ 
+            @Override 
+            public  boolean run(@NonNull TelemetryPacket packet){ 
+                try { 
+                    intake_sub.intakespinvertical(); 
+                } catch (InterruptedException e) { 
+                    throw new RuntimeException(e); 
+                } 
+                return false; 
+            } 
+ 
+        } 
+        public Action intakespin(){ 
+            return new intake.intakespin(); 
+        } 
+ 
+    }*/</span>
+
+    <span class="s0">public class </span><span class="s1">Robot_controller</span><span class="s2">{</span>
+
+        <span class="s0">private </span><span class="s1">Robot_Controller attachments</span><span class="s2">;</span>
+        <span class="s0">public </span><span class="s1">Robot_controller</span><span class="s2">(</span><span class="s1">intake_subsystem intake_sub</span><span class="s2">, </span><span class="s1">deposit_subsystem depo_sub</span><span class="s2">){</span>
+            <span class="s0">this</span><span class="s2">.</span><span class="s1">attachments </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Robot_Controller</span><span class="s2">(</span><span class="s1">intake_sub</span><span class="s2">,</span><span class="s1">depo_sub</span><span class="s2">);</span>
+        <span class="s2">}</span>
+            <span class="s0">public class </span><span class="s1">intake_ext </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+                <span class="s1">@Override</span>
+                <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                    <span class="s0">try </span><span class="s2">{</span>
+                        <span class="s1">attachments</span><span class="s2">.</span><span class="s1">ext_max</span><span class="s2">();</span>
+                    <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                        <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                    <span class="s2">}</span>
+                    <span class="s0">return false</span><span class="s2">;</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+            <span class="s0">public </span><span class="s1">Action intake_ext_max</span><span class="s2">(){</span>
+                <span class="s0">return new </span><span class="s1">intake_ext</span><span class="s2">();</span>
+            <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">intake_ext_3rd </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">ext_max_3rd</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action intake_ext_max_3rd</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">intake_ext_3rd</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">transferpose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">transfer</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action transfer</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">transferpose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+        <span class="s0">public class </span><span class="s1">intake_open </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s1">attachments</span><span class="s2">.</span><span class="s1">int_open</span><span class="s2">();</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action intake_open</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">intake_open</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">intake_close </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s1">attachments</span><span class="s2">.</span><span class="s1">int_close</span><span class="s2">();</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action intake_close</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">intake_close</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">int_spin_vert </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">int_vert_spin</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action int_vert</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">int_spin_vert</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">int_spin_hor </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s1">attachments</span><span class="s2">.</span><span class="s1">int_horizontal_spin</span><span class="s2">();</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action int_hor</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">int_spin_hor</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s3">//claw/deposit time</span>
+
+        <span class="s0">public class </span><span class="s1">depo_grab_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">depotransfer</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action depo_grab</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">depo_grab_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">depo_half_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">drophalfwaypose</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action depo_half</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">depo_half_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">depo_dump_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">droppose</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action depo_dump</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">depo_dump_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">depo_down_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">goingdown</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action depo_down</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">depo_down_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">depo_preload_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">attachments</span><span class="s2">.</span><span class="s1">depopreload</span><span class="s2">();</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">InterruptedException e</span><span class="s2">) {</span>
+                    <span class="s0">throw new </span><span class="s1">RuntimeException</span><span class="s2">(</span><span class="s1">e</span><span class="s2">);</span>
+                <span class="s2">}</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action depo_preload</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">depo_preload_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">fing_open_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s1">attachments</span><span class="s2">.</span><span class="s1">fingeropen</span><span class="s2">();</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action fing_open</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">fing_open_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">public class </span><span class="s1">finger_close_pose </span><span class="s0">implements </span><span class="s1">Action </span><span class="s2">{</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public boolean </span><span class="s1">run</span><span class="s2">(</span><span class="s1">@NonNull TelemetryPacket packet</span><span class="s2">) {</span>
+                <span class="s1">attachments</span><span class="s2">.</span><span class="s1">fingerclose</span><span class="s2">();</span>
+                <span class="s0">return false</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">public </span><span class="s1">Action finger_close</span><span class="s2">(){</span>
+            <span class="s0">return new </span><span class="s1">finger_close_pose</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+    <span class="s2">}</span>
+    <span class="s0">public </span><span class="s1">MecanumDrive drivetrain</span><span class="s2">;</span>
+    <span class="s0">public </span><span class="s1">ColorSensor colorSensor</span><span class="s2">;</span>
+    <span class="s3">//init the poses</span>
+    <span class="s0">public </span><span class="s1">Pose2d initialpose</span><span class="s2">;</span>
+
+
+    <span class="s3">//color sensor Values</span>
+    <span class="s0">public double </span><span class="s1">redValue</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">greenValue</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">blueValue</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">alphaValue</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">targetValue </span><span class="s2">= </span><span class="s5">1000</span><span class="s2">;</span>
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">runOpMode</span><span class="s2">() {</span>
+        <span class="s3">// define the poses</span>
+        <span class="s1">initialpose </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">14.5</span><span class="s2">, -</span><span class="s5">64</span><span class="s2">, </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">0</span><span class="s2">));</span>
+        <span class="s3">// declaring the drivetrain</span>
+        <span class="s1">MecanumDrive drivetrain </span><span class="s2">= </span><span class="s0">new </span><span class="s1">MecanumDrive</span><span class="s2">(</span><span class="s1">hardwareMap</span><span class="s2">, </span><span class="s1">initialpose</span><span class="s2">);</span>
+
+        <span class="s3">//calling attachments</span>
+        <span class="s1">Lifts lifts </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Lifts</span><span class="s2">(</span><span class="s1">hardwareMap</span><span class="s2">);</span>
+        <span class="s3">//needed to intialize the robot controller</span>
+        <span class="s1">intake_subsystem intake_sub </span><span class="s2">= </span><span class="s0">new </span><span class="s1">intake_subsystem</span><span class="s2">(</span><span class="s1">hardwareMap</span><span class="s2">,</span><span class="s4">&quot;left_intake_flip&quot;</span><span class="s2">,</span><span class="s4">&quot;right_intake_flip&quot;</span><span class="s2">,</span><span class="s4">&quot;left_extension&quot;</span><span class="s2">,</span><span class="s4">&quot;right_extension&quot;</span><span class="s2">,</span><span class="s4">&quot;clawtakespin&quot;</span><span class="s2">,</span><span class="s4">&quot;clawtake&quot;</span><span class="s2">);</span>
+        <span class="s1">deposit_subsystem depo_sub </span><span class="s2">= </span><span class="s0">new </span><span class="s1">deposit_subsystem</span><span class="s2">(</span><span class="s1">hardwareMap</span><span class="s2">,</span><span class="s4">&quot;left_outtake_flip&quot;</span><span class="s2">, </span><span class="s4">&quot;right_outtake_flip&quot;</span><span class="s2">,</span><span class="s4">&quot;outtake_ext&quot;</span><span class="s2">,</span><span class="s4">&quot;spin&quot;</span><span class="s2">,</span><span class="s4">&quot;finger&quot;</span><span class="s2">);</span>
+        <span class="s1">Robot_controller servo_attachments </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Robot_controller</span><span class="s2">(</span><span class="s1">intake_sub</span><span class="s2">, </span><span class="s1">depo_sub</span><span class="s2">);</span>
+
+        <span class="s3">//intake intake = new intake(hardwareMap);</span>
+        <span class="s3">//Claw depo = new Claw(hardwareMap);</span>
+
+        <span class="s1">colorSensor </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">ColorSensor</span><span class="s2">.</span><span class="s0">class</span><span class="s2">,</span><span class="s4">&quot;color_sensor&quot;</span><span class="s2">);</span>
+        <span class="s1">getColor</span><span class="s2">();</span>
+        <span class="s1">colorTelementry</span><span class="s2">();</span>
+
+        <span class="s3">// defining each trajectory</span>
+        <span class="s3">//goes to drop off preload</span>
+        <span class="s1">TrajectoryActionBuilder preload </span><span class="s2">= </span><span class="s1">drivetrain</span><span class="s2">.</span><span class="s1">actionBuilder</span><span class="s2">(</span><span class="s1">initialpose</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">90</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">lineToY</span><span class="s2">(-</span><span class="s5">56</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s3">//.splineToLinearHeading(new Pose2d(-51,-62,Math.toRadians(35.6557)),0)</span>
+                <span class="s3">//.lineToYLinearHeading(-48,-180)</span>
+                <span class="s3">//.waitSeconds(1)</span>
+                <span class="s2">.</span><span class="s1">lineToXLinearHeading</span><span class="s2">(-</span><span class="s5">55</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">45.6557</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder picksample1 </span><span class="s2">= </span><span class="s1">preload</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_ext_max</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">90</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">lineToY</span><span class="s2">(-</span><span class="s5">48</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">0</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">lineToXLinearHeading</span><span class="s2">(-</span><span class="s5">55.5</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">98</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_ext_max</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(intake.extendoMax())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.5</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">transfer</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(intake.transferpose())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(depo.ClawReset())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s3">//.stopAndAdd(depo.fingerclose())</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">())</span>
+                <span class="s3">//.waitSeconds(0.3)</span>
+                <span class="s3">//.stopAndAdd(intake.intakeopen())</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder dropsample1 </span><span class="s2">= </span><span class="s1">picksample1</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">90</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">lineToYLinearHeading</span><span class="s2">(-</span><span class="s5">55</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">30</span><span class="s2">))</span>
+                <span class="s3">//.lineToY(-55)</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder picksample2 </span><span class="s2">= </span><span class="s1">dropsample1</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s3">//.stopAndAdd(intake.intakeopen())</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_open</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">splineToLinearHeading</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">54</span><span class="s2">,-</span><span class="s5">46</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">70</span><span class="s2">)),</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_ext_max</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(intake.extendoMax())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.5</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">transfer</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(intake.transferpose())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(depo.ClawReset())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(depo.fingerclose())</span>
+               <span class="s3">// .waitSeconds(0.3)</span>
+                <span class="s3">//.stopAndAdd(intake.intakeopen())</span>
+                <span class="s3">//.turnTo(Math.toRadians(76)) need to try now, ask the discord for help</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s3">//.turnto</span>
+        <span class="s1">TrajectoryActionBuilder dropsample2 </span><span class="s2">= </span><span class="s1">picksample2</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">splineToLinearHeading</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">55</span><span class="s2">,-</span><span class="s5">56</span><span class="s2">, </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">65</span><span class="s2">)),</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder picksample3parallel </span><span class="s2">= </span><span class="s1">dropsample2</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">splineToLinearHeading</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">46</span><span class="s2">,-</span><span class="s5">29</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(-</span><span class="s5">180</span><span class="s2">)),</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_ext_max_3rd</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.5</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">intake_close</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">transfer</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(depo.ClawReset())</span>
+                <span class="s2">.</span><span class="s1">waitSeconds</span><span class="s2">(</span><span class="s5">0.3</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">stopAndAdd</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">())</span>
+                <span class="s3">//.stopAndAdd(depo.fingerclose())</span>
+                <span class="s3">//.waitSeconds(0.3)</span>
+                <span class="s3">//.stopAndAdd(intake.intakeopen())</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder dropsample3 </span><span class="s2">= </span><span class="s1">picksample3parallel</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">splineToLinearHeading</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">55</span><span class="s2">,-</span><span class="s5">56</span><span class="s2">, </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">60</span><span class="s2">)),</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s1">TrajectoryActionBuilder middlesample_park </span><span class="s2">= </span><span class="s1">dropsample3</span><span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">().</span><span class="s1">fresh</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">setTangent</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">splineToLinearHeading</span><span class="s2">(</span><span class="s0">new </span><span class="s1">Pose2d</span><span class="s2">(-</span><span class="s5">29</span><span class="s2">,-</span><span class="s5">10</span><span class="s2">,</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toRadians</span><span class="s2">(</span><span class="s5">0</span><span class="s2">)),</span><span class="s5">0</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">endTrajectory</span><span class="s2">();</span>
+        <span class="s3">// goes back a little</span>
+
+        <span class="s1">Action traj1</span><span class="s2">, </span><span class="s1">traj2</span><span class="s2">, </span><span class="s1">traj3</span><span class="s2">,</span><span class="s1">traj4</span><span class="s2">,</span><span class="s1">traj5</span><span class="s2">,</span><span class="s1">traj6</span><span class="s2">, </span><span class="s1">traj7</span><span class="s2">,</span><span class="s1">traj8</span><span class="s2">;</span>
+        <span class="s1">traj1 </span><span class="s2">= </span><span class="s1">preload</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj2 </span><span class="s2">= </span><span class="s1">picksample1</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj3 </span><span class="s2">= </span><span class="s1">dropsample1</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj4 </span><span class="s2">= </span><span class="s1">picksample2</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj5 </span><span class="s2">= </span><span class="s1">dropsample2</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj6</span><span class="s2">= </span><span class="s1">picksample3parallel</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj7</span><span class="s2">= </span><span class="s1">dropsample3</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+        <span class="s1">traj8 </span><span class="s2">= </span><span class="s1">middlesample_park</span><span class="s2">.</span><span class="s1">build</span><span class="s2">();</span>
+
+
+
+
+        <span class="s3">// sets of parallel actions</span>
+        <span class="s1">ParallelAction p1 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj1</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_preload</span><span class="s2">(),</span>
+                <span class="s3">//lifts.sampleparallelLiftUp()</span>
+                <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">3900</span><span class="s2">)</span>
+
+        <span class="s2">);</span>
+        <span class="s1">ParallelAction p2 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj2</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">()</span>
+        <span class="s2">);</span>
+
+        <span class="s1">ParallelAction p3 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj3</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">(),</span>
+                <span class="s3">//depo.flipclawhalf(),</span>
+                <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">3900</span><span class="s2">)</span>
+                <span class="s3">//lifts.sampleparallelLiftUp()</span>
+        <span class="s2">);</span>
+
+        <span class="s1">ParallelAction p4 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj4</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">()</span>
+                <span class="s3">//depo.ClawReset()</span>
+        <span class="s2">);</span>
+        <span class="s1">ParallelAction p5 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj5</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">(),</span>
+                <span class="s3">//depo.flipclawhalf(),</span>
+                <span class="s3">//lifts.sampleparallelLiftUp()</span>
+                <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">3900</span><span class="s2">)</span>
+        <span class="s2">);</span>
+
+        <span class="s1">ParallelAction p6 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj6</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">()</span>
+                <span class="s3">//depo.ClawReset()</span>
+        <span class="s2">);</span>
+        <span class="s1">ParallelAction p7 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ParallelAction</span><span class="s2">(</span>
+                <span class="s1">traj7</span><span class="s2">,</span>
+                <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_half</span><span class="s2">(),</span>
+
+                <span class="s3">//depo.flipclawhalf(),</span>
+                <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">3900</span><span class="s2">)</span>
+        <span class="s2">);</span>
+
+
+<span class="s3">// actual segment that runs, parallel actions and sequential order</span>
+       <span class="s1">Actions</span><span class="s2">.</span><span class="s1">runBlocking</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">transfer</span><span class="s2">());</span>
+       <span class="s1">Actions</span><span class="s2">.</span><span class="s1">runBlocking</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">());</span>
+       <span class="s1">Actions</span><span class="s2">.</span><span class="s1">runBlocking</span><span class="s2">(</span><span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">finger_close</span><span class="s2">());</span>
+
+        <span class="s3">//Actions.runBlocking(lifts.initlift());</span>
+        <span class="s1">waitForStart</span><span class="s2">();</span>
+        <span class="s1">Actions</span><span class="s2">.</span><span class="s1">runBlocking</span><span class="s2">(</span>
+                <span class="s0">new </span><span class="s1">SequentialAction</span><span class="s2">(</span>
+                        <span class="s1">p1</span><span class="s2">,</span>
+                        <span class="s3">//lifts.samplefullLiftUp(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_dump</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">fing_open</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">(),</span>
+                        <span class="s3">//depo.dumpoff(),</span>
+                        <span class="s3">//depo.OpenClaw(),</span>
+                        <span class="s3">//depo.ClawReset(),</span>
+                        <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">900</span><span class="s2">),</span>
+
+
+                       <span class="s1">p2</span><span class="s2">,</span>
+
+                        <span class="s1">p3</span><span class="s2">,</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_dump</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">fing_open</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">(),</span>
+                        <span class="s3">//depo.dumpoff(),</span>
+                        <span class="s3">//depo.OpenClaw(),</span>
+                        <span class="s3">//depo.ClawReset(),</span>
+                        <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">900</span><span class="s2">),</span>
+
+                        <span class="s1">p4</span><span class="s2">,</span>
+
+                        <span class="s1">p5</span><span class="s2">,</span>
+                        <span class="s3">//lifts.samplefullLiftUp(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_dump</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">fing_open</span><span class="s2">(),</span>
+                        <span class="s1">servo_attachments</span><span class="s2">.</span><span class="s1">depo_grab</span><span class="s2">(),</span>
+                        <span class="s3">//depo.dumpoff(),</span>
+                        <span class="s3">//depo.OpenClaw(),</span>
+                        <span class="s3">//depo.ClawReset(),</span>
+                        <span class="s1">lifts</span><span class="s2">.</span><span class="s1">moveLiftAction</span><span class="s2">(</span><span class="s5">900</span><span class="s2">)</span><span class="s3">//,</span>
+
+                        <span class="s3">//p6,</span>
+
+                        <span class="s3">//p7,</span>
+                        <span class="s3">//lifts.samplefullLiftUp(),</span>
+                        <span class="s3">//depo.dumpoff(),</span>
+                        <span class="s3">//depo.OpenClaw(),</span>
+
+                        <span class="s3">//lifts.slidesDown(),</span>
+                        <span class="s3">//depo.ClawReset()</span>
+
+                <span class="s2">)</span>
+        <span class="s2">);</span>
+        <span class="s3">// for run action building out everytging under a squential action and then inside of tha tput different parallel commands</span>
+
+    <span class="s2">}</span>
+    <span class="s0">public void </span><span class="s1">getColor</span><span class="s2">(){</span>
+        <span class="s1">redValue </span><span class="s2">= </span><span class="s1">colorSensor</span><span class="s2">.</span><span class="s1">red</span><span class="s2">();</span>
+        <span class="s1">greenValue </span><span class="s2">= </span><span class="s1">colorSensor</span><span class="s2">.</span><span class="s1">green</span><span class="s2">();</span>
+        <span class="s1">blueValue </span><span class="s2">= </span><span class="s1">colorSensor</span><span class="s2">.</span><span class="s1">blue</span><span class="s2">();</span>
+        <span class="s1">alphaValue </span><span class="s2">= </span><span class="s1">colorSensor</span><span class="s2">.</span><span class="s1">alpha</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">colorTelementry</span><span class="s2">(){</span>
+        <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;redValue&quot;</span><span class="s2">,</span><span class="s4">&quot;%.3f&quot;</span><span class="s2">, </span><span class="s1">redValue</span><span class="s2">);</span>
+        <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;greenValue&quot;</span><span class="s2">,</span><span class="s4">&quot;%.3f&quot;</span><span class="s2">, </span><span class="s1">greenValue</span><span class="s2">);</span>
+        <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;blueValue&quot;</span><span class="s2">,</span><span class="s4">&quot;%.3f&quot;</span><span class="s2">, </span><span class="s1">blueValue</span><span class="s2">);</span>
+        <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">addData</span><span class="s2">(</span><span class="s4">&quot;alphaValue&quot;</span><span class="s2">,</span><span class="s4">&quot;%.3f&quot;</span><span class="s2">, </span><span class="s1">alphaValue</span><span class="s2">);</span>
+        <span class="s1">telemetry</span><span class="s2">.</span><span class="s1">update</span><span class="s2">();</span>
+
+    <span class="s2">}</span>
+
+
+
+
+
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
