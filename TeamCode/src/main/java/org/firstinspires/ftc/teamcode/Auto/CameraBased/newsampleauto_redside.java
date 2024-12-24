@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.CameraBased;
 
 import androidx.annotation.NonNull;
 
@@ -15,17 +15,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.ModulesToImport.Conditionals.RedOrBlueCondition;
-import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.ColorBasedActionWrapper;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.ModulesToImport.Conditionals.CombinedDetectionPipeline;
+import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.Timer;
 import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.Robot_Controller;
 import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.deposit_subsystem;
 import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.intake_subsystem;
 import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.lifts_subsystem;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.firstinspires.ftc.teamcode.Test.OpenCV.CombinedVisionTest;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 //Use this field layout for X and Y
 // -X     BlueR                   BlueL     +X
 //|-------------------------------------------|  +Y
@@ -52,8 +54,8 @@ import java.util.List;
 
 
 @Config
-@Autonomous(name="4 sample conditional", group ="Autonomous")
-public class wrappedactionsbased extends LinearOpMode {
+@Autonomous(name="Sample Auto with Camera for Red", group ="Autonomous")
+public class newsampleauto_redside extends LinearOpMode {
 
 
     public class Lifts {
@@ -63,6 +65,7 @@ public class wrappedactionsbased extends LinearOpMode {
 
         public Lifts(HardwareMap hardwareMap) {
             this.liftss = new lifts_subsystem(hardwareMap, "leftslide", "rightslide");
+
             telemetry.addData("leftslide", liftss.getLeftSlidePosition());
             telemetry.addData("rightslide", liftss.getRightSlidePosition());
             telemetry.update();
@@ -155,12 +158,21 @@ public class wrappedactionsbased extends LinearOpMode {
         }
     }
 
-    public class Robot_controller{
+
+
+        /*
+
+ /*
+*/
+
+    public class Robot_controller {
 
         private Robot_Controller attachments;
-        public Robot_controller(intake_subsystem intake_sub, deposit_subsystem depo_sub){
-            this.attachments = new Robot_Controller(intake_sub,depo_sub);
+
+        public Robot_controller(intake_subsystem intake_sub, deposit_subsystem depo_sub) {
+            this.attachments = new Robot_Controller(intake_sub, depo_sub);
         }
+
         public class intake_ext implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
@@ -172,7 +184,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action intake_ext_max(){
+
+        public Action intake_ext_max() {
             return new intake_ext();
         }
 
@@ -187,7 +200,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action intake_ext_max_3rd(){
+
+        public Action intake_ext_max_3rd() {
             return new intake_ext_3rd();
         }
 
@@ -202,9 +216,11 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action transfer(){
+
+        public Action transfer() {
             return new transferpose();
         }
+
         public class intake_open implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
@@ -212,7 +228,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action intake_open(){
+
+        public Action intake_open() {
             return new intake_open();
         }
 
@@ -223,7 +240,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action intake_close(){
+
+        public Action intake_close() {
             return new intake_close();
         }
 
@@ -238,7 +256,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action int_vert(){
+
+        public Action int_vert() {
             return new int_spin_vert();
         }
 
@@ -249,7 +268,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action int_hor(){
+
+        public Action int_hor() {
             return new int_spin_hor();
         }
 
@@ -264,7 +284,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action preint(){
+
+        public Action preint() {
             return new finger_close_pose();
         }
 
@@ -275,7 +296,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action droptake(){
+
+        public Action droptake() {
             return new finger_close_pose();
         }
 
@@ -292,7 +314,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action depo_grab(){
+
+        public Action depo_grab() {
             return new depo_grab_pose();
         }
 
@@ -307,7 +330,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action depo_half(){
+
+        public Action depo_half() {
             return new depo_half_pose();
         }
 
@@ -322,7 +346,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action depo_dump(){
+
+        public Action depo_dump() {
             return new depo_dump_pose();
         }
 
@@ -337,7 +362,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action depo_down(){
+
+        public Action depo_down() {
             return new depo_down_pose();
         }
 
@@ -352,7 +378,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action depo_preload(){
+
+        public Action depo_preload() {
             return new depo_preload_pose();
         }
 
@@ -364,7 +391,8 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action fing_open(){
+
+        public Action fing_open() {
             return new fing_open_pose();
         }
 
@@ -375,152 +403,176 @@ public class wrappedactionsbased extends LinearOpMode {
                 return false;
             }
         }
-        public Action finger_close(){
+
+        public Action finger_close() {
             return new finger_close_pose();
         }
 
     }
+    //camera action
+    public class PipelineAction implements Action {
+        private final CombinedDetectionPipeline pipeline;
+        private final Runnable onDetectionComplete;
+        private boolean isComplete = false;
+
+        public PipelineAction(CombinedDetectionPipeline pipeline, Runnable onDetectionComplete) {
+            this.pipeline = pipeline;
+            this.onDetectionComplete = onDetectionComplete;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            // Continuously fetch detection results
+            String color = pipeline.getDominantColor();
+            String orientation = pipeline.getOrientation();
+
+            // Update telemetry with current detection data
+            packet.put("Detected Color", color);
+            packet.put("Detected Orientation", orientation);
+
+            // Add logic for stopping or completing the action
+            if (!"Unknown".equals(color) && !"Unknown".equals(orientation)) {
+                // Trigger the callback to handle detection
+                onDetectionComplete.run();
+                isComplete = true;
+            }
+
+            return !isComplete; // Continue running until detection is complete
+        }
+    }
+
+
+
     public MecanumDrive drivetrain;
-    public ColorSensor rightcolor;
-    public ColorSensor leftcolor;
-    public ColorSensor clawcolor;
+    public ColorSensor colorSensor;
     //init the poses
     public Pose2d initialpose;
 
 
     //color sensor Values
-    public double rightredValue;
-    public double rightgreenValue;
-    public double rightblueValue;
-    public double rightalphaValue;
-
-    public double leftredValue;
-    public double leftgreenValue;
-    public double leftblueValue;
-    public double leftalphaValue;
-    public double clawredValue;
-    public double clawgreenValue;
-    public double clawblueValue;
-    public double clawalphaValue;
+    public double redValue;
+    public double greenValue;
+    public double blueValue;
+    public double alphaValue;
     public double targetValue = 1000;
+
+    public  OpenCvCamera webcam;
+    public CombinedDetectionPipeline pipeline;
+
+    public long starttime = System.currentTimeMillis();
+
 
 
     @Override
     public void runOpMode() {
+
+        //setting up camera
+        initCamera(pipeline); // Pass the pipeline to your camera initialization method
+
+
         // define the poses
-        initialpose = new Pose2d(-36, -63.5, Math.toRadians(0));
+        initialpose = new Pose2d(-38.5, -64, Math.toRadians(0));
         // declaring the drivetrain
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, initialpose);
 
         //calling attachments
         Lifts lifts = new Lifts(hardwareMap);
         //needed to intialize the robot controller
-        intake_subsystem intake_sub = new intake_subsystem(hardwareMap,"left_intake_flip","right_intake_flip","left_extension","right_extension","clawtakespin","clawtake");
-        deposit_subsystem depo_sub = new deposit_subsystem(hardwareMap,"left_outtake_flip", "right_outtake_flip","outtake_ext","spin","finger");
+        intake_subsystem intake_sub = new intake_subsystem(hardwareMap, "left_intake_flip", "right_intake_flip", "left_extension", "right_extension", "clawtakespin", "clawtake");
+        deposit_subsystem depo_sub = new deposit_subsystem(hardwareMap, "left_outtake_flip", "right_outtake_flip", "outtake_ext", "spin", "finger");
         Robot_controller servo_attachments = new Robot_controller(intake_sub, depo_sub);
 
-        //intake intake = new intake(hardwareMap);
-        //Claw depo = new Claw(hardwareMap);
+        // Define the action for camera and its happening based on color
+        Action SampleDetection = new PipelineAction(pipeline, () -> {
+            // Code to execute when detection is complete
+            String detectedColor = pipeline.getDominantColor();
+            String detectedOrientation = pipeline.getOrientation();
+            telemetry.addData("Detected Color", detectedColor);
+            telemetry.addData("Detected Orientation", detectedOrientation);
+            telemetry.update();
 
-        rightcolor = hardwareMap.get(ColorSensor.class,"color_sensor");
-        getColorright();
-        getColorleft();
-        getColorclaw();
+            if("Veritcal".equals(detectedOrientation)) {
+                if ("Red".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                    servo_attachments.int_vert();
+                    sleep(100);
+                    servo_attachments.transfer();
+                } else if (System.currentTimeMillis() - starttime < 25000) {
+                    while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
+                        strafeLeft(drivetrain);
+                        detectedColor = pipeline.getDominantColor();
+
+                    }
+
+                }
+            } else if ("Horizontal".equals(detectedOrientation)){
+                if ("Red".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                    servo_attachments.int_hor();
+                    sleep(100);
+                    servo_attachments.transfer();
+                } else if (System.currentTimeMillis() - starttime < 25000) {
+                    while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
+                        strafeLeft(drivetrain);
+                        detectedColor = pipeline.getDominantColor();
+                    }
+                }
+
+            } else if ("Unknown".equals(detectedOrientation) && (System.currentTimeMillis() - starttime < 25000)){
+                while(!("Red".equals(detectedColor) || "Yellow".equals(detectedColor))){
+                    strafeLeft(drivetrain);
+                    detectedColor = pipeline.getDominantColor();
+                }
+            }
+        });
+
+
+        colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
+        getColor();
         colorTelementry();
-
 
 
         // defining each trajectory
         //goes to drop off preload
         TrajectoryActionBuilder preload = drivetrain.actionBuilder(initialpose)
-                .setTangent(Math.toRadians(90))
-                .lineToY(-56)
-                .setTangent(0)
-                .lineToXLinearHeading(-54,Math.toRadians(45.6557))
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-56,-55, Math.toRadians(45.6557)),0)
                 .endTrajectory();
         TrajectoryActionBuilder picksample1 = preload.endTrajectory().fresh()
                 .setTangent(90)
-                .splineToLinearHeading(new Pose2d(-55,-48,Math.toRadians(90)),90)
-                //.setTangent(0)
-                //.lineToXLinearHeading(-56,Math.toRadians(98))
-                .stopAndAdd(servo_attachments.intake_ext_max())
-                .waitSeconds(0.3)
-                .stopAndAdd(servo_attachments.transfer())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_grab())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_half())
+                .splineToLinearHeading(new Pose2d(-55, -53, Math.toRadians(90)), 90)
                 .endTrajectory();
         TrajectoryActionBuilder dropsample1 = picksample1.endTrajectory().fresh()
                 .setTangent(90)
-                .splineToLinearHeading(new Pose2d(-54.5,-56,Math.toRadians(45)),90)
-                //.lineToYLinearHeading(-55,Math.toRadians(45))
+                .turnTo(Math.toRadians(45))
                 .endTrajectory();
         TrajectoryActionBuilder picksample2 = dropsample1.endTrajectory().fresh()
-                .stopAndAdd(servo_attachments.intake_open())
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-52.2,-45.3,Math.toRadians(70)),0)
-                .stopAndAdd(servo_attachments.intake_ext_max())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.transfer())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_grab())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_half())
+                //need to find the exact thing maybe forward very little
                 .endTrajectory();
-        //.turnto
         TrajectoryActionBuilder dropsample2 = picksample2.endTrajectory().fresh()
-                .waitSeconds(0.2)
-                .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-54.5,-56, Math.toRadians(45)),0)
+                //shouldn't need to move will ave to check
                 .endTrajectory();
         TrajectoryActionBuilder picksample3parallel = dropsample2.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-41.5,-27,Math.toRadians(-180)),0)
-                .stopAndAdd(servo_attachments.intake_ext_max_3rd())
-                .waitSeconds(0.3)
-                .stopAndAdd(servo_attachments.intake_close())
-                .waitSeconds(0.2)
-                .lineToXLinearHeading(-40,Math.toRadians(-180))
-                .stopAndAdd(servo_attachments.transfer())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_grab())
-                .waitSeconds(0.2)
-                .stopAndAdd(servo_attachments.depo_half())
+                .turnTo(Math.toRadians(125))
                 .endTrajectory();
         TrajectoryActionBuilder dropsample3 = picksample3parallel.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-54.5,-56, Math.toRadians(45)),0)
+                .splineToLinearHeading(new Pose2d(-55, -53, Math.toRadians(90)), 0)
                 .endTrajectory();
         TrajectoryActionBuilder middlesample_park = dropsample3.endTrajectory().fresh()
                 .setTangent(0)
-                .splineToLinearHeading(new Pose2d(-29,-10,Math.toRadians(0)),0)
+                .splineToLinearHeading(new Pose2d(-29, -10, Math.toRadians(0)), 0)
                 .endTrajectory();
         // goes back a little
 
-        Action traj1, traj2, traj3,traj4,traj5,traj6, traj7,traj8;
+        Action traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8;
         traj1 = preload.build();
         traj2 = picksample1.build();
         traj3 = dropsample1.build();
         traj4 = picksample2.build();
         traj5 = dropsample2.build();
-        traj6= picksample3parallel.build();
-        traj7= dropsample3.build();
+        traj6 = picksample3parallel.build();
+        traj7 = dropsample3.build();
         traj8 = middlesample_park.build();
-
-        List<Action> trajectories = new ArrayList<>();
-        trajectories.add(traj3);
-        trajectories.add(traj5);
-        trajectories.add(traj7);
-
-        List<Action> wrappedActions = ColorBasedActionWrapper.wrapAllWithColorCheck(
-                trajectories,
-                leftcolor,
-                rightcolor,
-                new RedOrBlueCondition(),
-                "blue",
-                drivetrain
-        );
 
 
         // sets of parallel actions
@@ -530,37 +582,40 @@ public class wrappedactionsbased extends LinearOpMode {
                 lifts.liftUp(1.0, 36, 0)
         );
         ParallelAction p2 = new ParallelAction(
-                traj2
+                traj2,
+                lifts.moveLiftAction(0)
         );
 
         ParallelAction p3 = new ParallelAction(
-                wrappedActions.get(0),
+                traj3,
                 servo_attachments.depo_half(),
-                lifts.liftUp(1.0,36,0)
+                lifts.liftUp(1.0, 36, 0)
         );
 
         ParallelAction p4 = new ParallelAction(
                 traj4,
+                lifts.moveLiftAction(0),
                 servo_attachments.depo_grab()
         );
         ParallelAction p5 = new ParallelAction(
-                wrappedActions.get(1),
+                traj5,
                 servo_attachments.depo_half(),
-                lifts.liftUp(1.0,36,0)
+                lifts.liftUp(1.0, 36, 0)
         );
 
         ParallelAction p6 = new ParallelAction(
                 traj6,
+                lifts.moveLiftAction(0),
                 servo_attachments.depo_grab()
         );
         ParallelAction p7 = new ParallelAction(
-                wrappedActions.get(2),
+                traj7,
                 servo_attachments.depo_half(),
-                lifts.liftUp(1.0,36,0)
+                lifts.liftUp(1.0, 36, 0)
         );
         ParallelAction p8 = new ParallelAction(
-                lifts.moveLiftAction(0)//,
-                //traj8
+                lifts.moveLiftAction(0),
+                traj8
         );
 
 
@@ -579,29 +634,34 @@ public class wrappedactionsbased extends LinearOpMode {
                         servo_attachments.depo_dump(),
                         servo_attachments.fing_open(),
 
-                        servo_attachments.depo_grab(),
-                        lifts.moveLiftAction(300),
-
 
                         p2,
+                        servo_attachments.intake_ext_max(),
+                        servo_attachments.transfer(),
                         servo_attachments.depo_half(),
+
 
                         p3,
                         servo_attachments.depo_dump(),
                         servo_attachments.fing_open(),
-                        servo_attachments.depo_grab(),
-                        lifts.moveLiftAction(300),
+
 
                         p4,
+                        servo_attachments.intake_ext_max(),
+                        servo_attachments.transfer(),
                         servo_attachments.depo_half(),
+
 
                         p5,
                         servo_attachments.depo_dump(),
                         servo_attachments.fing_open(),
-                        servo_attachments.depo_grab(),
-                        lifts.moveLiftAction(300),
+
 
                         p6,
+                        servo_attachments.intake_ext_max(),
+                        servo_attachments.transfer(),
+                        servo_attachments.depo_half(),
+
 
                         p7,
                         servo_attachments.depo_dump(),
@@ -609,56 +669,65 @@ public class wrappedactionsbased extends LinearOpMode {
                         servo_attachments.depo_grab(),
 
                         p8
-                        //lifts.moveLiftAction(0),
 
-                        //traj8
 
 
                 )
         );
-        // for run action building out everything under a sequential action and then inside of that put different parallel commands
+        // for run action building out everytging under a squential action and then inside of tha tput different parallel commands
 
     }
-    public void getColorright(){
-        rightredValue = rightcolor.red();
-        rightgreenValue = rightcolor.green();
-        rightblueValue = rightcolor.blue();
-        rightalphaValue = rightcolor.alpha();
+
+    public void getColor() {
+        redValue = colorSensor.red();
+        greenValue = colorSensor.green();
+        blueValue = colorSensor.blue();
+        alphaValue = colorSensor.alpha();
     }
 
-    public void getColorleft(){
-        leftredValue = leftcolor.red();
-        leftgreenValue = leftcolor.green();
-        leftblueValue = leftcolor.blue();
-        leftalphaValue = leftcolor.alpha();
-    }
-
-    public void getColorclaw(){
-        clawredValue = clawcolor.red();
-        clawgreenValue = clawcolor.green();
-        clawblueValue = clawcolor.blue();
-        clawalphaValue = clawcolor.alpha();
-    }
-
-    public void colorTelementry(){
-        telemetry.addData("rightredValue","%.3f", rightredValue);
-        telemetry.addData("rightgreenValue","%.3f", rightgreenValue);
-        telemetry.addData("rightblueValue","%.3f", rightblueValue);
-        telemetry.addData("rightalphaValue","%.3f", rightalphaValue);
-        telemetry.addData("leftredValue","%.3f", leftredValue);
-        telemetry.addData("leftgreenValue","%.3f", leftgreenValue);
-        telemetry.addData("leftblueValue","%.3f", leftblueValue);
-        telemetry.addData("leftalphaValue","%.3f", leftalphaValue);
-        telemetry.addData("clawredValue","%.3f", clawredValue);
-        telemetry.addData("clawgreenValue","%.3f", clawgreenValue);
-        telemetry.addData("clawblueValue","%.3f", clawblueValue);
-        telemetry.addData("clawalphaValue","%.3f", clawalphaValue);
+    public void colorTelementry() {
+        telemetry.addData("redValue", "%.3f", redValue);
+        telemetry.addData("greenValue", "%.3f", greenValue);
+        telemetry.addData("blueValue", "%.3f", blueValue);
+        telemetry.addData("alphaValue", "%.3f", alphaValue);
         telemetry.update();
 
     }
+    private void initCamera(CombinedDetectionPipeline pipeline) {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
+        this.pipeline = new CombinedDetectionPipeline();
+        webcam.setPipeline(this.pipeline);
 
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
 
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Camera Error", errorCode);
+            }
+        });
+    }
 
+    public void strafeLeft(MecanumDrive drivetrain){
+        drivetrain.leftFront.setPower(0.2);
+        drivetrain.leftBack.setPower(-0.2);
+        drivetrain.rightFront.setPower(-0.2);
+        drivetrain.rightBack.setPower(0.2);
+    }
+
+    public void strafeRight(MecanumDrive drivetrain){
+        drivetrain.leftFront.setPower(-0.2);
+        drivetrain.leftBack.setPower(0.2);
+        drivetrain.rightFront.setPower(0.2);
+        drivetrain.rightBack.setPower(-0.2);
+    }
 
 }
+

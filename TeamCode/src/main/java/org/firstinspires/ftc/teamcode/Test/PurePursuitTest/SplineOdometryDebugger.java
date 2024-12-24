@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Test;
+package org.firstinspires.ftc.teamcode.Test.PurePursuitTest;
 
 import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.PathingAlgorithm;
 import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.SplineGenerator;

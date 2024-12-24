@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.Auto.sampleonly;
-
 public class lifts_subsystem extends SubsystemBase {
 
     private DcMotorEx rightslides;
