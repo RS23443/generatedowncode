@@ -409,6 +409,47 @@ public class newsampleauto_redside extends LinearOpMode {
         }
 
     }
+    public class StopStreaming implements Action {
+        private final OpenCvCamera webcam;
+        private boolean isComplete = false;
+
+        public StopStreaming(OpenCvCamera webcam) {
+            this.webcam = webcam;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (!isComplete) {
+                webcam.stopStreaming();
+                isComplete = true; // Mark the action as complete after stopping the stream
+            }
+            return false; // Action completes immediately
+        }
+    }
+
+    public class StartStreaming implements Action {
+        private final OpenCvCamera webcam;
+        private final int width;
+        private final int height;
+        private final OpenCvCameraRotation rotation;
+        private boolean isComplete = false;
+
+        public StartStreaming(OpenCvCamera webcam, int width, int height, OpenCvCameraRotation rotation) {
+            this.webcam = webcam;
+            this.width = width;
+            this.height = height;
+            this.rotation = rotation;
+        }
+
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            if (!isComplete) {
+                webcam.startStreaming(width, height, rotation);
+                isComplete = true; // Mark the action as complete after starting the stream
+            }
+            return false; // Action completes immediately
+        }
+    }
     //camera action
     public class PipelineAction implements Action {
         private final CombinedDetectionPipeline pipeline;
@@ -482,6 +523,8 @@ public class newsampleauto_redside extends LinearOpMode {
         deposit_subsystem depo_sub = new deposit_subsystem(hardwareMap, "left_outtake_flip", "right_outtake_flip", "outtake_ext", "spin", "finger");
         Robot_controller servo_attachments = new Robot_controller(intake_sub, depo_sub);
 
+        Action startStreaming = new StartStreaming(webcam, 320, 240, OpenCvCameraRotation.UPRIGHT);
+        Action stopStreaming = new StopStreaming(webcam);
         // Define the action for camera and its happening based on color
         Action SampleDetection = new PipelineAction(pipeline, () -> {
             // Code to execute when detection is complete
@@ -497,7 +540,7 @@ public class newsampleauto_redside extends LinearOpMode {
                     sleep(100);
                     servo_attachments.transfer();
                 } else if (System.currentTimeMillis() - starttime < 25000) {
-                    while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
+                    while(!("Red".equals(detectedColor) || "Yellow".equals(detectedColor))){
                         strafeLeft(drivetrain);
                         detectedColor = pipeline.getDominantColor();
 
@@ -510,7 +553,7 @@ public class newsampleauto_redside extends LinearOpMode {
                     sleep(100);
                     servo_attachments.transfer();
                 } else if (System.currentTimeMillis() - starttime < 25000) {
-                    while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
+                    while(!("Red".equals(detectedColor) || "Yellow".equals(detectedColor))){
                         strafeLeft(drivetrain);
                         detectedColor = pipeline.getDominantColor();
                     }
@@ -548,7 +591,7 @@ public class newsampleauto_redside extends LinearOpMode {
                 //need to find the exact thing maybe forward very little
                 .endTrajectory();
         TrajectoryActionBuilder dropsample2 = picksample2.endTrajectory().fresh()
-                //shouldn't need to move will ave to check
+                //shouldn't need to move will have to check
                 .endTrajectory();
         TrajectoryActionBuilder picksample3parallel = dropsample2.endTrajectory().fresh()
                 .setTangent(0)
@@ -669,6 +712,12 @@ public class newsampleauto_redside extends LinearOpMode {
                         servo_attachments.depo_grab(),
 
                         p8
+                        
+                        // how to call camera during the auto
+                        //startStreaming,
+                        //SampleDetection,
+                        //stopStreaming,
+                        //
 
 
 

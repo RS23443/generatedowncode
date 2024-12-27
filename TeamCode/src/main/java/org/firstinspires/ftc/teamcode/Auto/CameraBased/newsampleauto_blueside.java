@@ -409,6 +409,48 @@ public class newsampleauto_blueside extends LinearOpMode {
             }
 
         }
+
+            public class StopStreaming implements Action {
+                private final OpenCvCamera webcam;
+                private boolean isComplete = false;
+
+                public StopStreaming(OpenCvCamera webcam) {
+                    this.webcam = webcam;
+                }
+
+                @Override
+                public boolean run(TelemetryPacket packet) {
+                    if (!isComplete) {
+                        webcam.stopStreaming();
+                        isComplete = true; // Mark the action as complete after stopping the stream
+                    }
+                    return false; // Action completes immediately
+                }
+            }
+
+            public class StartStreaming implements Action {
+                private final OpenCvCamera webcam;
+                private final int width;
+                private final int height;
+                private final OpenCvCameraRotation rotation;
+                private boolean isComplete = false;
+
+                public StartStreaming(OpenCvCamera webcam, int width, int height, OpenCvCameraRotation rotation) {
+                    this.webcam = webcam;
+                    this.width = width;
+                    this.height = height;
+                    this.rotation = rotation;
+                }
+
+                @Override
+                public boolean run(TelemetryPacket packet) {
+                    if (!isComplete) {
+                        webcam.startStreaming(width, height, rotation);
+                        isComplete = true; // Mark the action as complete after starting the stream
+                    }
+                    return false; // Action completes immediately
+                }
+            }
         //camera action
     public class PipelineAction implements Action {
         private final CombinedDetectionPipeline pipeline;
@@ -481,6 +523,10 @@ public class newsampleauto_blueside extends LinearOpMode {
             intake_subsystem intake_sub = new intake_subsystem(hardwareMap, "left_intake_flip", "right_intake_flip", "left_extension", "right_extension", "clawtakespin", "clawtake");
             deposit_subsystem depo_sub = new deposit_subsystem(hardwareMap, "left_outtake_flip", "right_outtake_flip", "outtake_ext", "spin", "finger");
             Robot_controller servo_attachments = new Robot_controller(intake_sub, depo_sub);
+            // start streaming Action
+        Action startStreaming = new StartStreaming(webcam, 320, 240, OpenCvCameraRotation.UPRIGHT);
+        Action stopStreaming = new StopStreaming(webcam);
+
 
         // Define the action for camera and its happening based on color
         Action SampleDetection = new PipelineAction(pipeline, () -> {
@@ -499,7 +545,6 @@ public class newsampleauto_blueside extends LinearOpMode {
                     while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
                         strafeLeft(drivetrain);
                         detectedColor = pipeline.getDominantColor();
-
                     }
                 }
             } else if ("Horizontal".equals(detectedOrientation)){
@@ -513,7 +558,6 @@ public class newsampleauto_blueside extends LinearOpMode {
                         detectedColor = pipeline.getDominantColor();
                     }
                 }
-
             } else if ("Unknown".equals(detectedOrientation) && (System.currentTimeMillis() - starttime < 25000)){
                 while(!("Blue".equals(detectedColor) || "Yellow".equals(detectedColor))){
                     strafeLeft(drivetrain);
@@ -666,7 +710,14 @@ public class newsampleauto_blueside extends LinearOpMode {
                             servo_attachments.fing_open(),
                             servo_attachments.depo_grab(),
 
-                            p8
+                            p8//,
+
+                            // how to call camera during the auto
+                            //startStreaming,
+                            //SampleDetection,
+                            //stopStreaming,
+                            //
+
 
 
 
