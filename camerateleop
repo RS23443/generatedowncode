@@ -1,0 +1,266 @@
+package org.firstinspires.ftc.teamcode.teleop;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.ModulesToImport.Conditionals.TryCatchUtils;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Auto.CameraBased.newsampleauto_blueside;
+import org.firstinspires.ftc.teamcode.ModulesToImport.Conditionals.CombinedDetectionPipeline;
+import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.Timer;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.Robot_Controller;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.deposit_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.hang_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.intake_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.lifts_subsystem;
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Test.OpenCV.CombinedVisionTest;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+@Config
+@TeleOp(name = "sensor-based teleop - Blue", group = "Teleop")
+public class Sensor_Camera_Teleop_Blue extends LinearOpMode {
+
+    public MecanumDrive drivetrain;
+    public lifts_subsystem lifts;
+    public hang_subsystem hang;
+    public intake_subsystem intake;
+    public deposit_subsystem deposit;
+    public Robot_Controller servo_controller;
+    public Pose2d startingpose = new Pose2d(-29, -10, 0); // Initial pose
+    public CombinedDetectionPipeline pipeline;
+    public OpenCvCamera webcam;
+    public ColorSensor clawColorSensor;
+    public double clawredValue, clawblueValue, clawgreenValue, clawalphaValue;
+    public boolean isFingerOpen = false;
+    public  boolean isActionTriggered = false;
+    public boolean isOuttakeReset = true;
+    public boolean isOuttakeInScoringPosition=false;
+
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        // Initialize subsystems
+        drivetrain = new MecanumDrive(hardwareMap, startingpose);
+        lifts = new lifts_subsystem(hardwareMap, "leftslide", "rightslide");
+        hang = new hang_subsystem(hardwareMap, "right_hook", "left_hook");
+        intake = new intake_subsystem(hardwareMap, "left_intake_flip", "right_intake_flip",
+                "left_extension", "right_extension", "clawtakespin", "clawtake");
+        deposit = new deposit_subsystem(hardwareMap, "left_outtake_flip", "right_outtake_flip",
+                "outtake_ext", "spin", "finger");
+        servo_controller = new Robot_Controller(intake, deposit);
+
+        // Initialize sensors
+        clawColorSensor = hardwareMap.get(ColorSensor.class, "clawColorSensor");
+
+        // Wait for start
+        waitForStart();
+        initCamera();
+
+        while (opModeIsActive()) {
+            // Handle drivetrain movement
+            drivetrain_movement();
+            // claw color sensor is constantly updated
+            getColor();
+
+            // Handle lift joystick control
+            lifts.joystick(gamepad2, 1);
+
+            // Fetch detection results
+            String detectedColor = pipeline.getDominantColor();
+            String detectedOrientation = pipeline.getOrientation();
+
+            // Telemetry for what the Camera is reading
+            telemetry.addData("Detected Color", detectedColor);
+            telemetry.addData("Detected Orientation", detectedOrientation);
+            telemetry.update();
+
+            if (gamepad2.a) {
+                //max extend first
+                intake.maxextension();
+                isActionTriggered = false;
+            }
+
+            if (gamepad2.b && !isActionTriggered) {
+                isActionTriggered = true; // Prevent multiple triggers
+
+                if ("Vertical".equals(detectedOrientation)) {
+                    if ("Blue".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                        servo_controller.int_vert_spin();
+                        sleep(100);
+                        transfer();
+                    }
+                } else if ("Horizontal".equals(detectedOrientation)) {
+                    if ("Blue".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                        servo_controller.int_horizontal_spin();
+                        sleep(100);
+                        transfer();
+                    }
+                }
+            }
+
+           //will be automated color sensor detection for outtake
+            color_based_outtake();
+
+            //hang based on right stick, gamepad2
+            hang.joysticks(gamepad2,1.0);
+
+            if(gamepad2.y){
+                servo_controller.fingeropen();
+                isFingerOpen = true;
+            }
+
+            color_based_outtake_reset();
+        }
+    }
+
+    // Initialize the camera and pipeline
+    private void initCamera() {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        pipeline = new CombinedDetectionPipeline();
+        webcam.setPipeline(pipeline);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Camera Error", errorCode);
+            }
+        });
+    }
+
+    // Handle drivetrain movement
+    private void drivetrain_movement() {
+        double rx = gamepad1.right_stick_x;
+        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+        double speedforwheels = 1.0;
+
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        drivetrain.leftFront.setPower((y + rx + x) / denominator * speedforwheels);
+        drivetrain.leftBack.setPower((y - rx + x) / denominator * speedforwheels);
+        drivetrain.rightFront.setPower((y - rx - x) / denominator * speedforwheels);
+        drivetrain.rightBack.setPower((y + rx - x) / denominator * speedforwheels);
+    }
+
+    // Fetch claw color sensor values
+    private void getColor() {
+        clawredValue = clawColorSensor.red();
+        clawgreenValue = clawColorSensor.green();
+        clawblueValue = clawColorSensor.blue();
+        clawalphaValue = clawColorSensor.alpha();
+    }
+
+    // Trigger transfer mechanism
+    public void transfer() {
+        try {
+            servo_controller.transfer();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void color_based_outtake() throws InterruptedException {
+        //if claw sees a color
+        if(clawredValue > 1000 || clawblueValue > 1000 || clawgreenValue > 1000 && !isOuttakeInScoringPosition && isFingerOpen) /*threshold value needs to be tuned*/{
+            servo_controller.depotransfer(); //might need to change the method
+            isOuttakeInScoringPosition = true;
+            isOuttakeReset = false;
+            isFingerOpen = false;
+
+        }
+    }
+
+    public void color_based_outtake_reset() throws InterruptedException{
+        // when it can't detect color and finger has been opened
+        if(clawredValue < 1000 && clawblueValue < 1000 && clawgreenValue < 1000 && isFingerOpen && !isOuttakeReset) /*threshold value needs to be tuned*/{
+            servo_controller.goingdown(); //might need to change the method
+            isOuttakeReset = true;
+            isOuttakeInScoringPosition = false;
+            isFingerOpen = true;
+        }
+    }
+}
+
+/*
+    if (gamepad2.a && !isMonitoring) {
+                isMonitoring = true; // Start monitoring
+                if(!isCameraInitialized) {
+                    initCamera(); // Initialize camera and pipeline
+                    isCameraInitialized = true;
+                }
+                // Run pipeline monitoring in a separate thread
+                new Thread(() -> {
+                    while (isMonitoring && opModeIsActive()) {
+                        // Fetch detection results
+                        String detectedColor = pipeline.getDominantColor();
+                        String detectedOrientation = pipeline.getOrientation();
+
+                        // Telemetry for debugging
+                        telemetry.addData("Detected Color", detectedColor);
+                        telemetry.addData("Detected Orientation", detectedOrientation);
+                        telemetry.update();
+
+                        // Perform actions based on detection
+                        if ("Vertical".equals(detectedOrientation)) {
+                            if ("Blue".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                                try {
+                                    servo_controller.int_vert_spin();
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                sleep(100);
+                                transfer();
+                                isMonitoring = false; // Stop monitoring
+                            }
+                        } else if ("Horizontal".equals(detectedOrientation)) {
+                            if ("Blue".equals(detectedColor) || "Yellow".equals(detectedColor)) {
+                                servo_controller.int_horizontal_spin();
+                                sleep(100);
+                                transfer();
+                                isMonitoring = false; // Stop monitoring
+                            }
+                        }
+
+                        // Optional: Add logic for 'Unknown' orientation or invalid color
+                       // sleep(50); // Adjust polling interval
+                    }
+                    if (webcam != null) {
+                        //webcam.stopStreaming(); // Stop the camera after monitoring ends
+                        webcam.closeCameraDevice(); // will close the camera completely
+                        isCameraInitialized = false;
+                    }
+                }).start();
+            }
+
+            // Stop monitoring when 'B' button is pressed
+            if (gamepad2.b) {
+                isMonitoring = false;
+                //if (webcam != null) webcam.stopStreaming();
+                webcam.closeCameraDevice(); // will close the camera completely
+                isCameraInitialized = false;
+            }
+
+ */
