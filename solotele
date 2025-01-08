@@ -1,0 +1,244 @@
+package org.firstinspires.ftc.teamcode.teleop;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.ModulesToImport.Conditionals.EnhancedPipeline;
+
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.ModulesToImport.GeneratedCode.Timer;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.deposit_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.hang_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.intake_subsystem;
+import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.lifts_subsystem;
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Test.OpenCV.CombinedVisionTest;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+
+@Config
+@TeleOp(name="solo teleop", group="LinearOpMode")
+public class solotele extends LinearOpMode {
+    // wifi name: 23443-RC, password:RoboSupport23443
+    public MecanumDrive drivetrain;
+    public lifts_subsystem lifts;
+    public hang_subsystem hang;
+    public intake_subsystem intake;
+    public deposit_subsystem deposit;
+    public hang_subsystem hooks;
+    public ColorSensor clawColorSensor;
+    public double clawredValue, clawgreenValue, clawalphaValue, clawblueValue;
+    private double targetValue = 1000;
+
+    public double x;
+    public double rx;
+    public double y;
+    public double ry;
+    public double denominator;
+    public double speed = 1.0;
+    public boolean isBlockedGrabbed = false;
+    public boolean isSnapped = true;
+    public boolean isReadyToTransfer = false;
+    public boolean isIntakeMode = true;
+    public boolean isOuttakeMode = false;
+    public boolean isSlideInScoringPosition = false;
+    public boolean isDepoInGrapPose = true;
+    OpenCvCamera webcam;
+    EnhancedPipeline pipeline;
+
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        intake = new intake_subsystem(hardwareMap, "left_intake_flip","right_intake_flip","left_intake_ext","right_intake_ext","right_intake_diffy","left_intake_diffy","intake_claw");
+        deposit = new deposit_subsystem(intake, hardwareMap,"left_outtake_flip","right_outtake_flip","left_outtake_diffy","right_outtake_diffy","outtake_claw");
+        lifts = new lifts_subsystem(hardwareMap,"leftslide","rightslide");
+        hooks = new hang_subsystem(hardwareMap, "right_hook", "left_hook");
+
+        //sensors
+        clawColorSensor = hardwareMap.get(ColorSensor.class, "clawColorSensor");
+        intake.initCamera(hardwareMap,telemetry);
+
+        //for encoders reverse left
+        waitForStart();
+        while (opModeIsActive()) {
+            // setting up of sensors for continuous run
+            getColor();
+            colorTelementry();
+
+            String detectedColor = intake.getPipeline().getDominantColor();
+            String detectedOrientation = intake.getPipeline().getOrientation();
+
+            telemetry.addData("Detected Color", detectedColor);
+            telemetry.addData("Detected Orientation", detectedOrientation);
+            telemetry.update();
+
+
+            // assigning actions
+            if(gamepad1.dpad_down){
+                isIntakeMode = true;
+                isOuttakeMode = false;
+            }
+
+            if(gamepad1.dpad_up){
+                isIntakeMode = false;
+                isOuttakeMode = true;
+            }
+            if(isOuttakeMode && !isIntakeMode) {
+                if (gamepad1.b) {
+                    deposit.grabpose();
+                    isBlockedGrabbed = false;
+                    isDepoInGrapPose = true;
+                }
+
+                if (gamepad1.y && isBlockedGrabbed && (clawalphaValue > 900)) {
+                    deposit.open();
+                    isBlockedGrabbed = false;
+                }
+
+                if (gamepad1.a) {
+                    deposit.spintospec();
+                }
+            }
+            if(isIntakeMode && !isOuttakeMode) {
+                if (gamepad1.a) {
+                    //flip down
+                    intake.dropdownintake();
+                    //initiate claw and pull back
+                    intake.transferpose();
+                    isReadyToTransfer = true;
+                }
+
+                if (gamepad1.b) {
+                    //ready to grab
+                    //extend
+                    intake.prefireintake();
+                    isSnapped = false;
+
+                }
+
+                if (gamepad1.x) {
+                    intake.intakespinhorizontal();
+                }
+                if (gamepad1.y) {
+                    intake.intakespinvertical();
+                }
+
+                if ("Yellow".equals(detectedColor) || "Blue".equals(detectedColor)) {
+                    if ("Vertical".equals(detectedOrientation) && !isSnapped) {
+                        //bring the claw down
+                        //vertical block
+                        /*
+                        |         |
+                        |         |
+                        |         |
+                        |         |
+                        |         |
+                        ------------
+                         */
+                        intake.intakeopen();
+                        intake.intakespinvertical();
+                        isSnapped = true;
+                    }
+                    if ("Horizontal".equals(detectedOrientation) && !isSnapped) {
+                        //horizontal block
+                         /*
+                         --------------
+                         |            |
+                         |            |
+                         --------------
+                         */
+                        //spin
+
+                        intake.intakeopen();
+                        intake.intakespinhorizontal();
+                        telemetry.addLine("horizontal action being preformed");
+                        isSnapped = true;
+                    }
+
+                }
+            }
+
+
+            if (clawalphaValue > 900 && !isBlockedGrabbed && isReadyToTransfer && isDepoInGrapPose) {
+                deposit.dropose();
+                isBlockedGrabbed = true;
+                isReadyToTransfer = false;
+                isDepoInGrapPose = false;
+            }
+
+            if(!isDepoInGrapPose && !isBlockedGrabbed){
+                deposit.grabpose();
+                isBlockedGrabbed = false;
+                isDepoInGrapPose = true;
+            }
+
+            if(gamepad1.right_bumper){
+                //sample score
+                lifts.slidePID(1600);
+                isSlideInScoringPosition = true;
+
+            }
+
+            if(gamepad1.left_bumper){
+                lifts.slidePID(1000);
+                isSlideInScoringPosition = true;
+            }
+
+            if(isSlideInScoringPosition && !isBlockedGrabbed && isDepoInGrapPose){
+                lifts.slidePID(0);
+                isSlideInScoringPosition = false;
+            }
+
+            hooks.upTriggerBased(gamepad1,1.0);
+            hooks.DownTriggerBased(gamepad1,1.0);
+
+
+
+
+            rx = gamepad1.right_stick_x;
+            x = gamepad1.left_stick_x;
+            y = -gamepad1.left_stick_y;
+
+            denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            drivetrain.leftFront.setPower((y + rx + x) / denominator * speed);
+            drivetrain.leftBack.setPower((y - rx + x) / denominator * speed);
+            drivetrain.rightFront.setPower((y - rx - x) / denominator * speed);
+            drivetrain.rightBack.setPower((y + rx - x) / denominator * speed);
+        }
+    }
+
+    public void getColor() {
+        clawredValue = clawColorSensor.red();
+        clawgreenValue = clawColorSensor.green();
+        clawblueValue = clawColorSensor.blue();
+        clawalphaValue = clawColorSensor.alpha();
+    }
+
+    public void colorTelementry() {
+        telemetry.addData("redValue", "%.3f", clawredValue);
+        telemetry.addData("greenValue", "%.3f", clawgreenValue);
+        telemetry.addData("blueValue", "%.3f", clawblueValue);
+        telemetry.addData("alphaValue", "%.3f", clawalphaValue);
+        telemetry.update();
+
+    }
+}
