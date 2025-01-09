@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Test;
+package org.firstinspires.ftc.teamcode.Test.ColorSensorImplementation;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -21,8 +21,8 @@ public class WrappedActionTester extends LinearOpMode {
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, initialpose);
 
         // Initialize color sensors
-        ColorSensor leftSensor = hardwareMap.get(ColorSensor.class, "leftSensor");
-        ColorSensor rightSensor = hardwareMap.get(ColorSensor.class, "rightSensor");
+        ColorSensor leftSensor = hardwareMap.get(ColorSensor.class, "leftColorSensor");
+        ColorSensor rightSensor = hardwareMap.get(ColorSensor.class, "rightColorSensor");
 
         // Define a simple trajectory
         TrajectoryActionBuilder trajectory = drivetrain.actionBuilder(initialpose)

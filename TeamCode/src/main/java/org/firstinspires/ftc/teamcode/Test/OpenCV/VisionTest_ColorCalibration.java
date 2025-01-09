@@ -18,8 +18,6 @@ import org.opencv.imgproc.Imgproc;
 /**
  * Autonomous program to test block color detection using OpenCV.
  */
-
-// works - these are the values for yellow, red, and blue
 @Autonomous(name = "Vision Test Color Calibration", group = "Autonomous")
 public class VisionTest_ColorCalibration extends LinearOpMode {
 
@@ -94,34 +92,58 @@ public class VisionTest_ColorCalibration extends LinearOpMode {
 
     public static class ColorDetectionPipeline extends OpenCvPipeline {
 
-        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(140, 100); // Center position
-        static final int REGION_WIDTH = 40;
-        static final int REGION_HEIGHT = 40;
+        static final int CROP_WIDTH = 160; // Width of the cropped area
+        static final int CROP_HEIGHT = 120; // Height of the cropped area
+        static final int REGION_WIDTH = 40; // Width of the region to analyze
+        static final int REGION_HEIGHT = 40; // Height of the region to analyze
 
-        Point region_pointA = new Point(
-                REGION_TOPLEFT_ANCHOR_POINT.x,
-                REGION_TOPLEFT_ANCHOR_POINT.y);
-        Point region_pointB = new Point(
-                REGION_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
-        Mat region_HSV, HSV = new Mat();
+        Point region_pointA, region_pointB;
+        Mat HSV = new Mat();
+        Mat croppedInput, region_HSV;
         Scalar averageHSV = new Scalar(0, 0, 0);
 
         @Override
-        public void init(Mat firstFrame) {
-            Imgproc.cvtColor(firstFrame, HSV, Imgproc.COLOR_RGB2HSV);
-            region_HSV = HSV.submat(new Rect(region_pointA, region_pointB));
-        }
-
-        @Override
         public Mat processFrame(Mat input) {
-            Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
+            // Define the cropped region (center 160x120 area)
+            int cropWidth = 160;
+            int cropHeight = 120;
+
+            int offsetX = 20; // Shift right (+) or left (-)
+            int offsetY = -10; // Shift down (+) or up (-)
+
+            int startX = ((input.width() - cropWidth) / 2) + offsetX;
+            int startY = ((input.height() - cropHeight) / 2) + offsetY;
+
+            // Ensure cropping doesn't exceed frame bounds
+            startX = Math.max(0, Math.min(startX, input.width() - cropWidth));
+            startY = Math.max(0, Math.min(startY, input.height() - cropHeight));
+            Rect cropRect = new Rect(startX, startY, CROP_WIDTH, CROP_HEIGHT);
+
+            // Crop the input image
+            croppedInput = input.submat(cropRect);
+
+            // Define the region within the cropped image
+            int regionStartX = (CROP_WIDTH - REGION_WIDTH) / 2;
+            int regionStartY = (CROP_HEIGHT - REGION_HEIGHT) / 2;
+
+            region_pointA = new Point(regionStartX, regionStartY);
+            region_pointB = new Point(regionStartX + REGION_WIDTH, regionStartY + REGION_HEIGHT);
+
+            // Convert the cropped input to HSV
+            Imgproc.cvtColor(croppedInput, HSV, Imgproc.COLOR_RGB2HSV);
+
+            // Extract the region of interest within the cropped input
+            Rect regionRect = new Rect(region_pointA, region_pointB);
+            region_HSV = HSV.submat(regionRect);
+
+            // Compute the average HSV in the region
             averageHSV = Core.mean(region_HSV);
 
-            // Draw rectangle for visualization
-            Imgproc.rectangle(input, region_pointA, region_pointB, new Scalar(0, 255, 0), 2);
-            return input;
+            // Draw a rectangle around the region for visualization
+            Imgproc.rectangle(croppedInput, region_pointA, region_pointB, new Scalar(0, 255, 0), 2);
+
+            // Return the cropped frame for display
+            return croppedInput;
         }
 
         public Scalar getAverageHSV() {

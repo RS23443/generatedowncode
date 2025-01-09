@@ -15,12 +15,12 @@ public class lifts_subsystem extends SubsystemBase {
 
     private DcMotorEx rightslides;
     private DcMotorEx leftslides;
-    public static double p = 0.019, i = 0.0023, d = 0.000;
-    public static double p1 = 0.019, i1 = 0.0023, d1 = 0.000;
-    public static double maxticks = 3950.00;
-    private double f = 0.05;
-    private double f1 = 0.05;
-    private final double ticks_in_degree = 537.7 / 180.0;
+    public static double p = 0.014, i = 0.0025, d = 0.000;
+    public static double p1 = 0.014, i1 = 0.0025, d1 = 0.000;
+    public static double maxticks = 1660.00;
+    private double f = 0.075;
+    private double f1 = 0.075;
+    private final double ticks_in_degree = 145.1 / 180.0;
 
 
 
@@ -38,14 +38,14 @@ public class lifts_subsystem extends SubsystemBase {
         //leftslides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //rightslides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        rightslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //rightslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //leftslides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
     }
-    public void joystick(Gamepad gamepad, int speed){
-        rightslides.setPower(gamepad.left_stick_y * speed);
-        leftslides.setPower(gamepad.left_stick_y * speed);
+    public void joystick(Gamepad gamepad, double speed){
+        rightslides.setPower(-gamepad.right_stick_y * speed);
+        leftslides.setPower(-gamepad.right_stick_y * speed);
     }
     public void slidePID(int target){
 
@@ -96,12 +96,13 @@ public class lifts_subsystem extends SubsystemBase {
     }
 
     public class Lift implements Action {
+        //to go up go to 43 inches
         private double power = 0;
         private double ticksToMove = 0;
         private long endTime = 0;
 
         public Lift(double power, double inches, long secondsToWait) {
-            double ticksPerInch = ((4498+4345)/2)/44.5; // need to change this value when the robot is built
+            double ticksPerInch = ((1667)/44.75); // need to change this value when the robot is built
 
             this.power = power;
             this.ticksToMove = (int) (inches * ticksPerInch);
@@ -178,6 +179,14 @@ public class lifts_subsystem extends SubsystemBase {
     }
     public Action moveLiftAction(int targetPosition, lifts_subsystem lifts_subsystem) {
         return new MoveLiftToPosition(lifts_subsystem, targetPosition);
+    }
+
+    public void LiftupForTeleop(double power, double inches, long secondsToWait){
+        liftUp(power,inches,secondsToWait);
+    }
+
+    public void LiftDownForTeleop(double power, double inches, long secondsToWait){
+        liftDown(power,inches,secondsToWait);
     }
 }
 

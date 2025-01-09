@@ -16,16 +16,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class pidf_arm_tuning extends OpMode {
     private PIDController controller;
 
-    public static double p = 0.019, i = 0.0023, d = 0.000;
-    public static double f = 0.05;
+    public static double p = 0.014, i = 0.0025, d = 0.000;
+    public static double f = 0.075;
 
     private PIDController controller1;
 
-    public static double p1 = 0.019 , i1 = 0.0023, d1 = 0.000;
-    public static double f1 = 0.05;
+    public static double p1 = 0.014 , i1 = 0.0025, d1 = 0.000;
+    public static double f1 = 0.075;
 
-    public static int target = 1000;
-    private final double ticks_in_degree = 537.7 / 180.0;
+    public static int target = 500;
+    private final double ticks_in_degree = 145.1 / 180.0;
 
     private DcMotorEx left_slide;
     private DcMotorEx right_slide;

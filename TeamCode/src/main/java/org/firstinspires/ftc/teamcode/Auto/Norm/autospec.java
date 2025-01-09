@@ -48,7 +48,7 @@ import org.firstinspires.ftc.teamcode.ModulesToImport.ftclibsubsytems.lifts_subs
 //              270
 //
 
-@Disabled
+
 @Config
 @Autonomous(name="4 spec", group ="Autonomous")
 public class autospec extends LinearOpMode {
@@ -437,37 +437,23 @@ public class autospec extends LinearOpMode {
     @Override
     public void runOpMode() {
         // define the poses
-        initialpose = new Pose2d(9.61, -63.55, Math.toRadians(-180));
+        initialpose = new Pose2d(-9.61, -63.55, Math.toRadians(270));
         // declaring the drivetrain
         MecanumDrive drivetrain = new MecanumDrive(hardwareMap, initialpose);
 
-        //calling attachments
-        Claw claw = new Claw(hardwareMap);
-        Lifts lifts = new Lifts(hardwareMap);
-        intake intake = new intake(hardwareMap);
-        colorSensor = hardwareMap.get(ColorSensor.class,"color_sensor");
-        getColor();
-        colorTelementry();
-        lifts.slideTelementry();
-        //Sensors
-        //colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor"); //need to do still
-        //getColor();
-        //colorTelementry();
+
 
         // defining each trajectory
         //goes to drop off preload
         TrajectoryActionBuilder spec1 = drivetrain.actionBuilder(initialpose)
-                .setTangent(Math.toRadians(90))
-                .lineToYLinearHeading(-41.5,Math.toRadians(-90))
+                .setTangent(Math.toRadians(270))
+                .lineToYLinearHeading(-41.5,Math.toRadians(270))
                 .waitSeconds(1)
                 .endTrajectory();
         // goes back a little
         TrajectoryActionBuilder spec2depo = spec1.endTrajectory().fresh()
-                //.splineToLinearHeading(new Pose2d(48, -48,90),0)
-                .setTangent(Math.toRadians(180))
-                .lineToXSplineHeading(48,Math.toRadians(90))
-                .setTangent(Math.toRadians(90))
-                .lineToYConstantHeading(-50)
+                .setTangent(Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(-48,-48,90),90)
                 .endTrajectory();
         // goes to the enxtendo position and take first blue block
         TrajectoryActionBuilder spec3depo = spec2depo.endTrajectory().fresh()
@@ -512,39 +498,14 @@ public class autospec extends LinearOpMode {
 
 
 
-        // sets of parallel actions
-        ParallelAction p1 = new ParallelAction(
-                traj1,
-                lifts.SpecLiftUp()
-
-        );
-
-        ParallelAction p2 = new ParallelAction(
-                traj2, lifts.slidesDown()
-        );
-
-        ParallelAction p3 = new ParallelAction(
-                traj3, intake.extendoMax()
-        );
-
-        ParallelAction p4 = new ParallelAction(
-
-        );
 
 // actual segment that runs, parallel actions and sequential order
-        Actions.runBlocking(claw.initClaw());
-        Actions.runBlocking(lifts.initlift());
+
         waitForStart();
         Actions.runBlocking(
                 new SequentialAction(
-                        claw.CloseClaw(),
-                        p1,
-                        lifts.slidestoSpecDrop(),
-                        claw.OpenClaw(),
-                        claw.ClawReset(),
-                        p2
-
-                        //traj2
+                        traj1,
+                        traj2
                         //traj3
 
 
@@ -553,23 +514,4 @@ public class autospec extends LinearOpMode {
         // for run action building out everytging under a squential action and then inside of tha tput different parallel commands
 
     }
-    public void getColor(){
-        redValue = colorSensor.red();
-        greenValue = colorSensor.green();
-        blueValue = colorSensor.blue();
-        alphaValue = colorSensor.alpha();
-    }
-
-    public void colorTelementry(){
-        telemetry.addData("redValue","%.3f", redValue);
-        telemetry.addData("greenValue","%.3f", greenValue);
-        telemetry.addData("blueValue","%.3f", blueValue);
-        telemetry.addData("alphaValue","%.3f", alphaValue);
-        telemetry.update();
-
-    }
-
-
-
-
 }
